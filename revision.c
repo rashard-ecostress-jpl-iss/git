@@ -677,8 +677,9 @@ static int forbid_bloom_filters(struct pathspec *spec)
 		return 1;
 	if (spec->magic & ~PATHSPEC_LITERAL)
 		return 1;
-	if (spec->nr && (spec->items[0].magic & ~PATHSPEC_LITERAL))
-		return 1;
+	for (int i = 0; i < spec->nr; i++)
+		if (spec->items[0].magic & ~PATHSPEC_LITERAL)
+			return 1;
 
 	return 0;
 }

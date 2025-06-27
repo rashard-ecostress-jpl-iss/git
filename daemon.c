@@ -1140,6 +1140,7 @@ static int service_loop(struct socketlist *socklist)
 
 		for (size_t i = 0; i < socklist->nr; i++) {
 			if (pfd[i].revents & POLLIN) {
+				int incoming;
 				union {
 					struct sockaddr sa;
 					struct sockaddr_in sai;
@@ -1148,11 +1149,19 @@ static int service_loop(struct socketlist *socklist)
 #endif
 				} ss;
 				socklen_t sslen = sizeof(ss);
-				int incoming = accept(pfd[i].fd, &ss.sa, &sslen);
+				int retry = 3;
+
+			redo:
+				incoming = accept(pfd[i].fd, &ss.sa, &sslen);
 				if (incoming < 0) {
 					switch (errno) {
-					case EAGAIN:
 					case EINTR:
+						if (--retry) {
+							check_dead_children();
+							goto redo;
+						}
+						/* fallthrough */
+					case EAGAIN:
 					case ECONNABORTED:
 						continue;
 					default:

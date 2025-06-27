@@ -138,8 +138,8 @@ test_expect_success 'git log with --walk-reflogs does not use Bloom filters' '
 	test_bloom_filters_not_used "--walk-reflogs -- A"
 '
 
-test_expect_success 'git log -- multiple path specs does not use Bloom filters' '
-	test_bloom_filters_not_used "-- file4 A/file1"
+test_expect_success 'git log -- multiple path specs use Bloom filters' '
+	test_bloom_filters_used "-- file4 A/file1"
 '
 
 test_expect_success 'git log -- "." pathspec at root does not use Bloom filters' '
@@ -151,9 +151,9 @@ test_expect_success 'git log with wildcard that resolves to a single path uses B
 	test_bloom_filters_used "-- *renamed"
 '
 
-test_expect_success 'git log with wildcard that resolves to a multiple paths does not uses Bloom filters' '
-	test_bloom_filters_not_used "-- *" &&
-	test_bloom_filters_not_used "-- file*"
+test_expect_success 'git log with wildcard that resolves to a multiple paths uses Bloom filters' '
+	test_bloom_filters_used "-- *" &&
+	test_bloom_filters_used "-- file*"
 '
 
 test_expect_success 'setup - add commit-graph to the chain without Bloom filters' '
